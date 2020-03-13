@@ -1,0 +1,40 @@
+function check_dependencies() {
+	docker -v 1>/dev/null || (echo "Error: Please install docker" && exit 1)
+	docker info 1>/dev/null || (echo "Error: Please start or configure docker" && exit 1)
+	docker-compose -v 1>/dev/null || (echo "Error: Please install docker-compose" && exit 1)
+	curl --version 1>/dev/null || (echo "Error: Please install curl" && exit 1)
+	git --version 1>/dev/null || (echo "Error: Please install git" && exit 1)
+}
+
+function clone() {
+    local type=$1
+    local package=$2
+    if ! test -d "${type}/${package}"
+    then
+        echo "== Cloning ${type} ${package} =="
+        git clone https://github.com/${type}/${package}.git solution/${package}
+        (test -f "solution/${package}/package.json" && npm --prefix solution/${package} install) || true
+        (test -f "solution/${package}/package.json" && npm --prefix solution/${package} run build) || true
+    fi
+}
+
+function build_service() {
+        (test -f solution/$@/tsconfig.json && npm --prefix solution/$@ run --silent build) || true
+}
+
+function up_service() {
+    build_service $@
+    docker-compose up -d $@
+}
+
+function up_service_with_db() {
+    for service in "$@"
+    do
+        run_service "${service}" "
+        npm run db:create;
+        npm run db:migrate;
+        npm run db:init;
+        "
+        up_service "${service}"
+    done
+}
