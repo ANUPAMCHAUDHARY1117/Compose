@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  #REACT REDUX SAGA
+
+  React-Redux-Saga:
+    container_name: React-Redux-Saga
+    image: react-redux-saga
+    build:
+      context: $PWD/solution/$REPO1
+      dockerfile: Dockerfile.local
+    volumes:
+      - $PWD/solution/$REPO1:/usr/src/app
+      - $PWD/solution/$REPO1/node_modules:/usr/src/app/node_modules
+    environment:
+      - API_SERVER=http://localhost:3000
+      - BASE_URL=/
+      - APP_PORT=$SOLUTION_FRONTEND_PORT
+      - API_USER_MANAGEMENT_SERVER=http://localhost:8809
+      - ENABLE_COOKIE_AUTH=true
+    #   networks:
+    #     - $NVT_NETWORK
+    #   ports:
+    #     - $SOLUTION_FRONTEND_PORT:$SOLUTION_FRONTEND_PORT
+    #     - $SOLUTION_FRONTEND_DEBUG_PORT:$SOLUTION_FRONTEND_DEBUG_PORT
