@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+set -e
+
+# Setup environment variables
+source ./compose.env
+
+# Setup script functions
+source ./cs/utils
+source ./cs/command
+
+# Check dependencies are running
+check_dependencies
+
+# Starting script command
+run_command "$@"
